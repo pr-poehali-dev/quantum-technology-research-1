@@ -1,5 +1,6 @@
 import { useScroll, useTransform, motion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import CalcModal from "@/components/CalcModal";
 
 export default function Hero() {
   const container = useRef<HTMLDivElement>(null);
@@ -8,34 +9,42 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
   const y = useTransform(scrollYProgress, [0, 1], ["0vh", "50vh"]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div
-      ref={container}
-      className="relative flex items-center justify-center h-screen overflow-hidden"
-    >
-      <motion.div
-        style={{ y }}
-        className="absolute inset-0 w-full h-full"
+    <>
+      <div
+        ref={container}
+        className="relative flex items-center justify-center h-screen overflow-hidden"
       >
-        <img
-          src="/images/mountain-landscape.jpg"
-          alt="Mountain landscape"
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
+        <motion.div
+          style={{ y }}
+          className="absolute inset-0 w-full h-full"
+        >
+          <img
+            src="/images/mountain-landscape.jpg"
+            alt="Mountain landscape"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
 
-      <div className="relative z-10 text-center text-white">
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
-          АНТЕННА
-        </h1>
-        <p className="text-lg md:text-xl max-w-2xl mx-auto px-6 opacity-90">
-          Точный расчёт центра фазы антенны для инженеров и исследователей
-        </p>
-        <button className="mt-8 px-8 py-3 border border-white text-white uppercase text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
-          Начать расчёт
-        </button>
+        <div className="relative z-10 text-center text-white">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+            АНТЕННА
+          </h1>
+          <p className="text-lg md:text-xl max-w-2xl mx-auto px-6 opacity-90">
+            Точный расчёт центра фазы антенны для инженеров и исследователей
+          </p>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="mt-8 px-8 py-3 border border-white text-white uppercase text-sm tracking-wide hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+          >
+            Начать расчёт
+          </button>
+        </div>
       </div>
-    </div>
+
+      <CalcModal open={modalOpen} onClose={() => setModalOpen(false)} />
+    </>
   );
 }
