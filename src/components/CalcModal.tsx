@@ -98,11 +98,13 @@ function calcPhaseCenter(points: MeasurementPoint[], freq: number, geoCenter: [n
 
   // График фазы vs угол theta
   const sorted = [...valid].sort((a, b) => parseFloat(a.theta) - parseFloat(b.theta));
-  const phaseData = sorted.map((p, i) => {
+  const phaseData = sorted.map((p) => {
     const theta = parseFloat(p.theta) || 0;
     const r = Math.sqrt(Math.pow(parseFloat(p.x) - pcX, 2) + Math.pow(parseFloat(p.y) - pcY, 2) + Math.pow(parseFloat(p.z) - pcZ, 2));
-    const idealPhase = parseFloat(((k * r * 1e-3 * 180) / Math.PI % 360).toFixed(1));
-    return { theta: `${theta}°`, phase: parseFloat(p.phase) || 0, ideal: idealPhase };
+    const rawIdeal = r > 0 ? (k * r * 1e-3 * 180) / Math.PI : 0;
+    const idealPhase = parseFloat((rawIdeal % 360).toFixed(1));
+    const measuredPhase = parseFloat(p.phase) || 0;
+    return { theta: `${theta}°`, phase: isNaN(measuredPhase) ? 0 : measuredPhase, ideal: isNaN(idealPhase) ? 0 : idealPhase };
   });
   if (phaseData.length === 0) {
     for (let t = -90; t <= 90; t += 15)
@@ -112,15 +114,18 @@ function calcPhaseCenter(points: MeasurementPoint[], freq: number, geoCenter: [n
   // Таблица точек
   const tableData = valid.map((p, i) => {
     const r = Math.sqrt(Math.pow(parseFloat(p.x) - pcX, 2) + Math.pow(parseFloat(p.y) - pcY, 2) + Math.pow(parseFloat(p.z) - pcZ, 2));
-    const idealPhase = (k * r * 1e-3 * 180) / Math.PI % 360;
+    const rawIdeal = r > 0 ? (k * r * 1e-3 * 180) / Math.PI : 0;
+    const idealPhase = rawIdeal % 360;
+    const measured = parseFloat(p.phase) || 0;
+    const phaseErr = isNaN(idealPhase) ? 0 : parseFloat(Math.abs(measured - idealPhase).toFixed(2));
     return {
       n: i + 1,
       x: parseFloat(parseFloat(p.x).toFixed(3)),
       y: parseFloat(parseFloat(p.y).toFixed(3)),
       z: parseFloat(parseFloat(p.z).toFixed(3)),
-      amp: parseFloat(parseFloat(p.amplitude).toFixed(3)),
-      phase: parseFloat(parseFloat(p.phase || "0").toFixed(2)),
-      phaseErr: parseFloat(Math.abs((parseFloat(p.phase) || 0) - idealPhase).toFixed(2)),
+      amp: parseFloat((parseFloat(p.amplitude) || 0).toFixed(3)),
+      phase: parseFloat(measured.toFixed(2)),
+      phaseErr,
     };
   });
 
@@ -194,10 +199,20 @@ export default function CalcModal({ open, onClose }: Props) {
   };
 
   const handleCalculate = () => {
-    const freq = parseFloat(params.frequency);
-    if (!params.frequency || isNaN(freq)) return;
-    setResult(calcPhaseCenter(points, freq, [parseFloat(geoCenter.x) || 0, parseFloat(geoCenter.y) || 0, parseFloat(geoCenter.z) || 0]));
-    setStep("result");
+    try {
+      const freq = parseFloat(params.frequency);
+      if (!params.frequency || isNaN(freq) || freq <= 0) return;
+      const gc: [number, number, number] = [
+        parseFloat(geoCenter.x) || 0,
+        parseFloat(geoCenter.y) || 0,
+        parseFloat(geoCenter.z) || 0,
+      ];
+      const res = calcPhaseCenter(points, freq, gc);
+      setResult(res);
+      setStep("result");
+    } catch (e) {
+      console.error("Ошибка расчёта:", e);
+    }
   };
 
   const handleClose = () => { onClose(); setTimeout(() => { setStep("form"); setResult(null); }, 400); };
