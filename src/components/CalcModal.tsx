@@ -397,10 +397,10 @@ export default function CalcModal({ open, onClose }: Props) {
                       ["Размер", `${params.size || "—"} мм`],
                       ["Точек измерений", String(points.filter(p => p.x).length)],
                     ].map(([k, v]) => (
-                      <>
-                        <div key={k + "_k"} className="text-neutral-500">{k}</div>
-                        <div key={k + "_v"} className="text-white font-medium">{v}</div>
-                      </>
+                      <div key={k} className="contents">
+                        <div className="text-neutral-500">{k}</div>
+                        <div className="text-white font-medium">{v}</div>
+                      </div>
                     ))}
                   </div>
                 </div>
