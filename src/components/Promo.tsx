@@ -18,20 +18,26 @@ export default function Promo() {
       <div className="fixed top-[-10vh] left-0 h-[120vh] w-full">
         <motion.div style={{ y }} className="relative w-full h-full">
           <img
-            src="/images/spiral-circles.jpg"
-            alt="Abstract spiral circles"
+            src="https://cdn.poehali.dev/projects/f28b87c4-ded9-4c87-a70e-35b53962fcd5/files/f7967a3e-348d-4190-b822-528dda67ead1.jpg"
+            alt="Радарный сигнал антенны"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.55)" }} />
         </motion.div>
       </div>
 
-      <h3 className="absolute top-12 right-6 text-white uppercase z-10 text-sm md:text-base lg:text-lg">
-        Физика в деталях
-      </h3>
+      {/* Верхний лейбл */}
+      <div className="absolute top-12 left-6 z-10 flex items-center gap-3">
+        <div className="w-px h-8 bg-red-500" />
+        <span className="text-red-400 text-xs uppercase tracking-widest font-semibold">Физика в деталях</span>
+      </div>
 
-      <p className="absolute bottom-12 right-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-5xl z-10">
-        Центр фазы — ключевой параметр антенны. Определите его точно, и ваши системы навигации,
-        связи и радиолокации заработают на полную мощность.
+      {/* Основной текст */}
+      <p className="absolute bottom-16 left-6 right-6 text-white font-bold z-10
+        text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+        max-w-3xl leading-tight">
+        Центр фазы — ключевой параметр антенны.{" "}
+        <span className="text-blue-400">Определите его точно</span>, и ваши системы навигации, связи и радиолокации заработают на полную мощность.
       </p>
     </div>
   );
